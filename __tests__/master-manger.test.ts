@@ -2,10 +2,7 @@ import { CallBack } from '../src/call-back';
 import { MasterManager } from '../src/master-manger';
 
 const eventName = 'Test';
-const callBack: CallBack = {
-  id: 1,
-  run: () => 'function Called',
-};
+const callBack = new CallBack(() => 'function Called');
 
 describe('test for subscribing for event', () => {
   let masterManager = new MasterManager();
@@ -37,30 +34,23 @@ test(' unSubcribing from event should remove callBack form _subsctibedCallBack m
   expect(masterManager.subscribedCallBackForTestOnly.get(eventName)?.has(callBack.id)).toEqual(false);
 });
 
-
-test('clearEventSubscibed should remove  event',()=>{
+test('clearEventSubscibed should remove  event', () => {
   let masterManager = new MasterManager();
   masterManager.subscribeForEventSync(eventName, callBack);
   masterManager.clearEventSubscribedSync(eventName);
   expect(masterManager.subscribedCallBackForTestOnly.has(eventName)).toEqual(false);
 });
 
-
-
-test('emit event should call all subscribed',async ()=> {
+test('emit event should call all subscribed', async () => {
   let masterManager = new MasterManager();
-  
-  let callBack1:CallBack= {
-    id:1,
-    run :jest.fn().mockImplementation(() => "a")
-  };
-  let callBack2:CallBack= {
-    id:2,
-    run :jest.fn().mockImplementation(() => "b")
-  };
-  
-  masterManager.subscribeForEventSync(eventName,callBack1);
-  masterManager.subscribeForEventSync(eventName,callBack2);
+
+  const callBack1 = new CallBack(
+    jest.fn().mockImplementation(() => 'a'),
+  );
+  const callBack2 = new CallBack(jest.fn().mockImplementation(() => 'b'));
+
+  masterManager.subscribeForEventSync(eventName, callBack1);
+  masterManager.subscribeForEventSync(eventName, callBack2);
 
   await masterManager.emitEvent(eventName);
   expect(callBack1.run).toBeCalled();
