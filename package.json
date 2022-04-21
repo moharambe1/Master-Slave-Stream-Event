@@ -1,0 +1,48 @@
+{
+  "name": "template-typescript-npm-package",
+  "version": "1.0.0",
+  "description": "template for creating typescript npm package",
+  "main": "index.js",
+  "files": [
+    "lib/**/*"
+  ],
+  "scripts": {
+    "test": "jest --config jestconfig.json",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" ",
+    "lint": "eslint -c .eslintrc.json",
+
+    "prepare" : "npm run build",
+    "prepublishOnly" : "npm test && npm run lint",
+    "preversion" : "npm run lint",
+    "version" : "npm run format && git add -A src",
+    "postversion" : "git push && git push --tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moharambe1/template-typescript-npm-package.git"
+  },
+  "keywords": [
+    "template",
+    "creating",
+    "typescript",
+    "npm",
+    "package"
+  ],
+  "author": "mohammedi ahmed dhia eddine",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/moharambe1/template-typescript-npm-package/issues"
+  },
+  "homepage": "https://github.com/moharambe1/template-typescript-npm-package#readme",
+  "devDependencies": {
+    "@types/jest": "^27.4.1",
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "eslint": "^8.13.0",
+    "eslint-config-prettier": "^8.5.0",
+    "jest": "^27.5.1",
+    "prettier": "^2.6.2",
+    "ts-jest": "^27.1.4",
+    "typescript": "^4.6.3"
+  }
+}
