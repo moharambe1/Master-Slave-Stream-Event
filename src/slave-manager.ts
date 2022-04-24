@@ -1,23 +1,28 @@
-import { manger } from './top-manger';
 import { CallBack } from './call-back';
 import { MasterManager } from './master-manger';
 
-class SlaveManager {
-  private _mapeventCallBack: Map<number, Map<String, CallBack['id']>>;
+type pCallBacl = ((data?: any) => void) | CallBack;
+
+export class SlaveManager {
+  private _mapEventCallBack: Map<number, Map<String, CallBack['id']>>;
 
   constructor() {
-    this._mapeventCallBack = new Map<number, Map<String, CallBack['id']>>();
+    this._mapEventCallBack = new Map<number, Map<String, CallBack['id']>>();
   }
 
-  subscribeFroEventSync(masterManager: MasterManager, eventName: String, callBack: (data?: any) => void): CallBack {
-    const list = this._mapeventCallBack.get(masterManager.id);
-    const tmpCallBack = new CallBack(callBack);
+  subscribeFroEventSync(masterManager: MasterManager, eventName: String, callBack: pCallBacl): CallBack {
+    const list = this._mapEventCallBack.get(masterManager.id);
+    let tmpCallBack: CallBack;
+    if (callBack instanceof CallBack) tmpCallBack = callBack;
+    else tmpCallBack = new CallBack(callBack);
 
     if (list !== undefined && list !== null) {
       masterManager.subscribeForEventSync(eventName, tmpCallBack);
       list.set(eventName, tmpCallBack.id);
     } else {
-      this._mapeventCallBack.set(masterManager.id, new Map<String, CallBack['id']>([[eventName, tmpCallBack.id]]));
+      this._mapEventCallBack.set(masterManager.id, new Map<String, CallBack['id']>());
+      this._mapEventCallBack.get(masterManager.id)?.set(eventName, tmpCallBack.id);
+      masterManager.subscribeForEventSync(eventName, tmpCallBack);
     }
     return tmpCallBack;
   }
@@ -36,5 +41,9 @@ class SlaveManager {
 
   async unSbscribeFromEvent(masterManager: MasterManager, eventName: string, callBackId: CallBack | number) {
     this.unSbscribeFromEventSync(masterManager, eventName, callBackId);
+  }
+
+  get mapEventCallBack() {
+    return this._mapEventCallBack;
   }
 }
